@@ -1,0 +1,54 @@
+type Query {
+  info: String!
+  session(id: ID!): Session
+  user: User
+}
+
+type Mutation {
+  createSession(title: String!, description: String!): Session!
+  updateSession(id: ID!, title: String, description: String): Session
+  deleteSession(id: ID!): Session
+
+  createQuestion(text: String!, sessionId: ID!): Question!
+
+  signup(name: String!, email: String!, password: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+
+  vote(questionId: ID!, sessionId: ID!): Vote
+}
+
+type Session {
+  id: ID!
+  createdAt: String!
+  title: String!
+  description: String!
+  postedBy: User!
+  questions: [Question!]!
+  votesOfCurrentUser: [Vote!]!
+  totalQuestionCount: Int!
+  totalVoteCount: Int!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  sessions: [Session!]!
+}
+
+type Question {
+  id: ID!
+  createdAt: String!
+  text: String!
+  voteCount: Int!
+}
+
+type Vote {
+  question: Question!
+  user: User!
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
