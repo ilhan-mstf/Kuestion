@@ -8,26 +8,28 @@ describe('Session type resolver', () => {
     const questions = [{ id: 'question-0' }]
     QuestionRepository.getQuestionsOfSession = jest.fn().mockImplementation(() => questions)
 
-    const user = { id: 'user-0' }
+    const user = { email: 'user@google.com' }
     UserRepository.getUser = jest.fn().mockImplementation(() => user)
 
-    const votes = [{ id: 'question-0-user-0' }]
+    const votes = [{ id: 'question-0-user@google.com' }]
     VoteRepository.getSessionVotesOfCurrentUser = jest.fn().mockImplementation(() => votes)
 
-    const vote = {
+    const session = {
       id: 'session-0',
       createdAt: new Date().getTime(),
       title: 'title',
       description: 'desc',
-      userId: 'user-0'
+      email: 'user@google.com'
     }
 
-    expect(Session.id(vote)).toBe(vote.id)
-    expect(Session.createdAt(vote)).toBe(vote.createdAt + "")
-    expect(Session.title(vote)).toBe(vote.title)
-    expect(Session.description(vote)).toBe(vote.description)
-    expect(Session.postedBy(vote)).toEqual(user)
-    expect(Session.questions(vote)).toEqual(questions)
-    expect(Session.votesOfCurrentUser(vote)).toEqual(votes)
+    expect(Session.id(session)).toBe(session.id)
+    expect(Session.createdAt(session)).toBe(session.createdAt + "")
+    expect(Session.title(session)).toBe(session.title)
+    expect(Session.description(session)).toBe(session.description)
+    expect(Session.postedBy(session, {}, {repo:{}})).toEqual(user)
+    expect(Session.questions(session, {}, {repo:{}})).toEqual(questions)
+    expect(Session.votesOfCurrentUser(session, {}, {repo:{}})).toEqual(votes)
+    expect(Session.totalQuestionCount(session)).toEqual(session.totalQuestionCount)
+    expect(Session.totalVoteCount(session)).toEqual(session.totalVoteCount)
   })
 })

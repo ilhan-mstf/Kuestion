@@ -1,47 +1,47 @@
-const db = require('../data/db.js')
-const { get, persist } = require('./EntityRepository')
 const QuestionRepository = require('./QuestionRepository')
+const SessionRepository = require('./SessionRepository')
 
-function createVote (questionId, sessionId, postedBy) {
+async function createVote (repo, questionId, sessionId, postedBy) {
   if (!postedBy) {
-    throw new Error('createVote - No user found')
+    throw new Error('createVote - No user found', postedBy)
   }
-  const id = `${questionId}-${postedBy}`
-  const hasVote = getVote(id)
+  const hasQuestion = await QuestionRepository.getQuestion(repo, questionId)
+  if (!hasQuestion) {
+    throw new Error('createVote - No question found', questionId)
+  }
+  const hasSession = await SessionRepository.getSession(repo, sessionId)
+  if (!hasSession) {
+    throw new Error('createVote - No session found', sessionId)
+  }
+
+  const hasVote = await getVote(repo, questionId, postedBy)
   if (hasVote) {
-    console.log('createVote - Already voted.', questionId, sessionId, postedBy)
-    throw new Error(`createVote - Already voted`)
+    throw new Error(`createVote - Already voted`, questionId, postedBy)
   }
+
   const vote = {
-    id: id,
     questionId: questionId,
     sessionId: sessionId,
-    userId: postedBy
+    email: postedBy,
+    createdAt: new Date().getTime()
   }
-  QuestionRepository.incrementVoteCount(questionId)
-  return persist(db.votes, vote)
+  const result = await repo.Vote.persist(vote)
+
+  QuestionRepository.incrementVoteCount(repo, questionId)
+  SessionRepository.incrementTotalVoteCount(repo, sessionId)
+
+  return result
 }
 
-function getVote (id) {
-  return get(db.votes, id)
+function getVote (repo, questionId, email) {
+  return repo.Vote.get(questionId, email)
 }
 
-function getSessionVotesOfCurrentUser (sessionId, userId) {
-  return Object.values(db.votes).filter(v => v.sessionId === sessionId && v.userId === userId)
-}
-
-function getVoteCountOfSession (sessionId) {
-  let count = 0
-  Object.values(db.votes).forEach(q => {
-    if (q.sessionId === sessionId) {
-      count++
-    }
-  })
-  return count
+function getSessionVotesOfCurrentUser (repo, sessionId, userId) {
+  return repo.Vote.getSessionVotesOfCurrentUser(sessionId, userId).map(v => v.questionId)
 }
 
 module.exports = {
   createVote,
-  getSessionVotesOfCurrentUser,
-  getVoteCountOfSession
+  getSessionVotesOfCurrentUser
 }

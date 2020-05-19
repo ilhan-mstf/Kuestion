@@ -7,7 +7,6 @@ type Query {
 type Mutation {
   createSession(title: String!, description: String!): Session!
   updateSession(id: ID!, title: String, description: String): Session
-  deleteSession(id: ID!): Session
 
   createQuestion(text: String!, sessionId: ID!): Question!
 
@@ -24,15 +23,14 @@ type Session {
   description: String!
   postedBy: User!
   questions: [Question!]!
-  votesOfCurrentUser: [Vote!]!
+  votesOfCurrentUser: [ID!]!
   totalQuestionCount: Int!
   totalVoteCount: Int!
 }
 
 type User {
-  id: ID!
-  name: String!
   email: String!
+  name: String!
   sessions: [Session!]!
 }
 
@@ -44,6 +42,7 @@ type Question {
 }
 
 type Vote {
+  id: ID!
   question: Question!
   user: User!
 }

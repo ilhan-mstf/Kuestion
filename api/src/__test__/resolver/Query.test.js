@@ -8,18 +8,18 @@ describe('Query type resolver', () => {
     const session = { id: 'session-0' }
     SessionRepository.getSession = jest.fn().mockImplementationOnce(() => session)
 
-    expect(Query.session({}, { id: 'session-0' })).toEqual(session)
+    expect(Query.session({}, { id: 'session-0' }, { repo: {} })).toEqual(session)
   })
 
   it('Should resolve user when logged in', async () => {
     const user = { id: 'user-0' }
     UserRepository.getUser = jest.fn().mockImplementationOnce(() => user)
-    Authentication.getUserId = jest.fn().mockImplementationOnce(() => 'user-0')
+    Authentication.getEmail = jest.fn().mockImplementationOnce(() => 'user@google.com')
 
-    expect(Query.user({}, {}, {})).toEqual(user)
+    expect(Query.user({}, {}, { repo: {} })).toEqual(user)
   })
 
   it('Should return no value when nobody logged in', async () => {
-    expect(Query.user({}, {}, {})).toEqual(undefined)
+    expect(Query.user({}, {}, { repo: {} })).toEqual(undefined)
   })
 })
