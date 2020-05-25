@@ -1,51 +1,44 @@
-const db = require('../data/db.js')
-const { get, persist } = require('./EntityRepository')
+const SessionRepository = require('./SessionRepository')
 
-function createQuestion (text, sessionId, postedBy) {
+async function createQuestion (repo, sessionId, postedBy, text) {
   if (!postedBy) {
     throw new Error('createQuestion - No user found')
   }
+  const hasSession = await SessionRepository.getSession(repo, sessionId)
+  if (!hasSession) {
+    throw new Error('createQuestion - No session found')
+  }
+  // TODO string.notblank
+  
   const question = {
-    id: `question-${db.questions.idCount}`,
+    sessionId: sessionId,
+    email: postedBy,
     createdAt: new Date().getTime(),
     text: text,
-    sessionId: sessionId,
-    userId: postedBy,
     voteCount: 0
   }
-  return persist(db.questions, question)
+  const result = await repo.Question.persist(question)
+  
+  SessionRepository.incrementTotalQuestionCount(repo, sessionId)
+  
+  return result
 }
 
-function getQuestion (id) {
-  return get(db.questions, id)
+function getQuestion (repo, id) {
+  return repo.Question.get(id)
 }
 
-function getQuestionsOfSession (sessionId) {
-  return Object.values(db.questions).filter(q => q.sessionId === sessionId)
+function getQuestionsOfSession (repo, sessionId) {
+  return repo.Question.getQuestionsOfSession(sessionId)
 }
 
-function incrementVoteCount (id) {
-  const question = getQuestion(id)
-  console.log("incrementVoteCount", question, id)
-  if (question) {
-    question.voteCount += 1
-  }
-}
-
-function getQuestionCountOfSession (sessionId) {
-  let count = 0
-  Object.values(db.questions).forEach(q => {
-    if (q.sessionId === sessionId) {
-      count++
-    }
-  })
-  return count
+function incrementVoteCount (repo, id) {
+  return repo.Question.incrementVoteCount(id)
 }
 
 module.exports = {
   createQuestion,
   getQuestion,
   getQuestionsOfSession,
-  incrementVoteCount,
-  getQuestionCountOfSession
+  incrementVoteCount
 }

@@ -6,13 +6,13 @@ function info () {
   return `This is the API of a Kuestion App`
 }
 
-function session (parent, { id }) {
-  return SessionRepository.getSession(id)
+function session (parent, { id }, context) {
+  return SessionRepository.getSession(context.repo, id)
 }
 
 function user (parent, args, context) {
-  const userId = Authentication.getUserId(context)
-  return UserRepository.getUser(userId)
+  const email = Authentication.getEmail(context)
+  return UserRepository.getUser(context.repo, email)
 }
 
 module.exports = {

@@ -1,39 +1,26 @@
-const db = require('../data/db.js')
-const { get, persist } = require('./EntityRepository')
 const bcrypt = require('bcryptjs')
 
-async function createUser (name, email, password) {
+async function createUser (repo, name, email, password) {
   // TODO email validation
-  const hasUser = getUserByEmail(email)
+  const hasUser = await getUser(repo, email)
   if (hasUser) {
     throw new Error('createUser - User already exists')
   }
   const hashedPassword = await bcrypt.hash(password, 10)
   const user = {
-    id: `user-${db.users.idCount}`,
     createdAt: new Date().getTime(),
     name: name,
     email: email,
     password: hashedPassword
   }
-  return persist(db.users, user)
+  return repo.User.persist(user)
 }
 
-function getUserByEmail (email) {
-  const users = Object.values(db.users)
-  for (const user of users) {
-    if (user.email === email) {
-      return user
-    }
-  }
-}
-
-function getUser (id) {
-  return get(db.users, id)
+function getUser (repo, email) {
+  return repo.User.get(email)
 }
 
 module.exports = {
   createUser,
-  getUserByEmail,
   getUser
 }

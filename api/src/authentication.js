@@ -1,12 +1,14 @@
 const jwt = require('jsonwebtoken')
 const APP_SECRET = 'Arise, arise, Riders of Théoden! ... Ride now, ride now! Ride to Gondor!'
 
-function getUserId (context) {
-  const Authorization = context.request.get('Authorization')
-  if (Authorization) {
-    const token = Authorization.replace('Bearer ', '')
-    const { userId } = jwt.verify(token, APP_SECRET)
-    return userId
+function getEmail (context) {
+  //console.log(context)
+  const headers = context.request || context.event.headers
+  const authorization = headers.authorization || headers.get('Authorization')
+  if (authorization) {
+    const token = authorization.replace('Bearer ', '')
+    const { email } = jwt.verify(token, APP_SECRET)
+    return email
   }
 
   throw new Error('Not authenticated')
@@ -14,5 +16,5 @@ function getUserId (context) {
 
 module.exports = {
   APP_SECRET,
-  getUserId
+  getEmail
 }

@@ -8,10 +8,7 @@ import { SESSION_LIST_QUERY } from './SessionList'
 const VOTE_MUTATION = gql`
   mutation VoteMutation($questionId: ID!, $sessionId: ID!) {
     vote(questionId: $questionId, sessionId: $sessionId) {
-      question {
-        id
-        voteCount
-      }
+      id
     }
   }
 `
@@ -59,6 +56,16 @@ class QuestionItem extends Component {
   _updateQuestionData (store, sessionId, questionId) {
     const queryData = { query: SESSION_QUERY, variables: { id: sessionId } }
     const data = store.readQuery(queryData)
+    const question = data.session.questions.find(q => q.id === questionId)
+    if (question) {
+      question.voteCount += 1
+
+      store.writeQuery({
+        query: SESSION_QUERY,
+        variables: { id: sessionId },
+        data
+      })
+    }
 
     this.props.updateQuestions(data.session.questions)
   }

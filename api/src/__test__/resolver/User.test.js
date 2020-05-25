@@ -7,14 +7,12 @@ describe('User type resolver', () => {
     SessionRepository.getSessionsOfUser = jest.fn().mockImplementation(() => sessions)
 
     const user = {
-      id: 'user-0',
       name: 'alice',
       email: 'alice@google.com'
     }
 
-    expect(User.id(user)).toBe(user.id)
     expect(User.name(user)).toBe(user.name)
     expect(User.email(user)).toBe(user.email)
-    expect(User.sessions(user)).toEqual(sessions)
+    expect(User.sessions(user, {}, {repo:{}})).toEqual(sessions)
   })
 })

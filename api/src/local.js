@@ -5,6 +5,7 @@ const Session = require('./resolver/Session')
 const User = require('./resolver/User')
 const Question = require('./resolver/Question')
 const Vote = require('./resolver/Vote')
+const repo = require('./repository/dynamodb/DynamoDbRepository')
 
 const resolvers = {
   Query,
@@ -19,7 +20,7 @@ const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
   resolvers,
   context: request => {
-    return { ...request }
+    return { ...request, repo }
   }
 })
 server.start(() => console.log(`Server is running on http://localhost:4000`))

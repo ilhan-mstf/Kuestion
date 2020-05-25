@@ -1,58 +1,56 @@
-const db = require('../data/db.js')
-const { get, persist, remove } = require('./EntityRepository')
-
-function createSession (title, description, postedBy) {
+function createSession (repo, postedBy, title, description) {
   if (!postedBy) {
     throw new Error('createSession - No user found')
   }
+  
   const session = {
-    id: `session-${db.sessions.idCount}`,
+    email: postedBy,
     createdAt: new Date().getTime(),
     title: title,
     description: description,
-    userId: postedBy
+    totalQuestionCount: 0,
+    totalVoteCount: 0
   }
-  return persist(db.sessions, session)
+  
+  return repo.Session.persist(session)
 }
 
-function getSession (id) {
-  return get(db.sessions, id)
+function getSession (repo, id) {
+  return repo.Session.get(id)
 }
 
-function updateSession (id, title, description, updatedBy) {
-  const session = getSession(id)
+async function updateSession (repo, id, updatedBy, title, description) {
+  const session = await getSession(repo, id)
   if (!session) {
     throw new Error('updateSession - No session found')
   }
-  if (session.userId !== updatedBy) {
+  if (session.email !== updatedBy) {
     throw new Error('updateSession - Not allowed')
   }
+
   session.title = title || session.title
   session.description = description || session.description
-  return session
+  
+  return repo.Session.update(session)
 }
 
-function deleteSession (id, deletedBy) {
-  const session = getSession(id)
-  if (!session) {
-    throw new Error('deleteSession - No session found')
-  }
-  if (session.userId !== deletedBy) {
-    throw new Error('deleteSession - Not allowed')
-  }
-  remove(db.sessions, id)
-  // TODO You need to delete questions and votes associated with that session
-  return session
+function getSessionsOfUser (repo, email) {
+  return repo.Session.getSessionsOfUser(email)
 }
 
-function getSessionsOfUser (userId) {
-  return Object.values(db.sessions).filter(s => s.userId === userId)
+function incrementTotalQuestionCount (repo, id) {
+  return repo.Session.incrementTotalQuestionCount(id)
+}
+
+function incrementTotalVoteCount (repo, id) {
+  return repo.Session.incrementTotalVoteCount(id)
 }
 
 module.exports = {
   getSession,
   createSession,
   updateSession,
-  deleteSession,
-  getSessionsOfUser
+  getSessionsOfUser,
+  incrementTotalQuestionCount,
+  incrementTotalVoteCount
 }

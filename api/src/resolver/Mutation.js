@@ -8,23 +8,18 @@ const QuestionRepository = require('../repository/QuestionRepository')
 const VoteRepository = require('../repository/VoteRepository')
 
 function createSession (parent, { title, description }, context) {
-  const postedBy = Authentication.getUserId(context)
-  return SessionRepository.createSession(title, description, postedBy)
+  const postedBy = Authentication.getEmail(context)
+  return SessionRepository.createSession(context.repo, postedBy, title, description)
 }
 
 function updateSession (parent, { id, title, description }, context) {
-  const updatedBy = Authentication.getUserId(context)
-  return SessionRepository.updateSession(id, title, description, updatedBy)
-}
-
-function deleteSession (parent, { id }, context) {
-  const deletedBy = Authentication.getUserId(context)
-  return SessionRepository.deleteSession(id, deletedBy)
+  const updatedBy = Authentication.getEmail(context)
+  return SessionRepository.updateSession(context.repo, id, updatedBy, title, description)
 }
 
 function createQuestion (parent, { text, sessionId }, context) {
-  const postedBy = Authentication.getUserId(context)
-  return QuestionRepository.createQuestion(text, sessionId, postedBy)
+  const postedBy = Authentication.getEmail(context)
+  return QuestionRepository.createQuestion(context.repo, sessionId, postedBy, text)
 }
 
 async function signup (parent, { name, email, password }, context) {
@@ -33,8 +28,8 @@ async function signup (parent, { name, email, password }, context) {
     throw new Error('signup - Already logged in!')
   }
 
-  const user = await UserRepository.createUser(name, email, password)
-  const token = jwt.sign({ userId: user.id }, Authentication.APP_SECRET)
+  const user = await UserRepository.createUser(context.repo, name, email, password)
+  const token = jwt.sign({ email: user.email }, Authentication.APP_SECRET)
 
   return {
     token,
@@ -48,8 +43,8 @@ async function login (parent, { email, password }, context) {
     throw new Error('login - Already logged in!')
   }
 
-  const user = UserRepository.getUserByEmail(email)
-  if (!user) {
+  const user = await UserRepository.getUser(context.repo, email)
+  if (!user.email) {
     console.log(`No such user found for ${email}`)
     throw new Error('login - Invalid username or password')
   }
@@ -60,7 +55,7 @@ async function login (parent, { email, password }, context) {
     throw new Error('login - Invalid username or password')
   }
 
-  const token = jwt.sign({ userId: user.id }, Authentication.APP_SECRET)
+  const token = jwt.sign({ email: user.email }, Authentication.APP_SECRET)
 
   return {
     token,
@@ -69,14 +64,13 @@ async function login (parent, { email, password }, context) {
 }
 
 function vote (parent, { questionId, sessionId }, context) {
-  const postedBy = Authentication.getUserId(context)
-  return VoteRepository.createVote(questionId, sessionId, postedBy)
+  const postedBy = Authentication.getEmail(context)
+  return VoteRepository.createVote(context.repo, questionId, sessionId, postedBy)
 }
 
 module.exports = {
   createSession,
   updateSession,
-  deleteSession,
 
   createQuestion,
 

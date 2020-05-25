@@ -7,12 +7,11 @@ const Authentication = require('../../authentication')
 describe('Mutation type resolver', () => {
   it('Should create session when logged in', async () => {
     const session = {
-      id: 'session-0',
       title: 'a',
       description: 'b'
     }
     SessionRepository.createSession = jest.fn().mockImplementationOnce(() => session)
-    Authentication.getUserId = jest.fn().mockImplementationOnce(() => 'user-0')
+    Authentication.getEmail = jest.fn().mockImplementationOnce(() => 'user@google.com')
 
     expect(Mutation.createSession({}, { title: 'a', describe: 'b' }, {})).toEqual(session)
   })
@@ -28,29 +27,13 @@ describe('Mutation type resolver', () => {
       description: 'b'
     }
     SessionRepository.updateSession = jest.fn().mockImplementationOnce(() => session)
-    Authentication.getUserId = jest.fn().mockImplementationOnce(() => 'user-0')
+    Authentication.getUserId = jest.fn().mockImplementationOnce(() => 'user@google.com')
 
     expect(Mutation.updateSession({}, { id:'session-0', title: 'a', describe: 'b' }, {})).toEqual(session)
   })
 
   it('Should fail to update session when not logged in', async () => {
     expect(Mutation.createSession({}, { id:'session-0', title: 'a', describe: 'b' }, {})).toEqual(undefined)
-  })
-
-  it('Should delete session when logged in', async () => {
-    const session = {
-      id: 'session-0',
-      title: 'a',
-      description: 'b'
-    }
-    SessionRepository.deleteSession = jest.fn().mockImplementationOnce(() => session)
-    Authentication.getUserId = jest.fn().mockImplementationOnce(() => 'user-0')
-
-    expect(Mutation.deleteSession({}, { id:'session-0' }, {})).toEqual(session)
-  })
-
-  it('Should fail to delete session when not logged in', async () => {
-    expect(Mutation.deleteSession({}, { id:'session-0' }, {})).toEqual(undefined)
   })
 
   it('Should create question when logged in', async () => {
@@ -65,7 +48,7 @@ describe('Mutation type resolver', () => {
   })
 
   it('Should fail to create question when not logged in', async () => {
-    expect(Mutation.deleteSession({}, { text: 'Where is my mind?' }, {})).toEqual(undefined)
+    expect(Mutation.createQuestion({}, { text: 'Where is my mind?' }, {})).toEqual(undefined)
   })
 
   it('Should create vote when logged in', async () => {

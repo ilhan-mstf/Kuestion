@@ -7,9 +7,15 @@ module.exports = {
   createdAt: (parent) => parent.createdAt + "",
   title: (parent) => parent.title,
   description: (parent) => parent.description,
-  postedBy: (parent) => UserRepository.getUser(parent.userId),
-  questions: (parent) => QuestionRepository.getQuestionsOfSession(parent.id),
-  votesOfCurrentUser: (parent) => VoteRepository.getSessionVotesOfCurrentUser(parent.id, parent.userId),
-  totalQuestionCount: (parent) => QuestionRepository.getQuestionCountOfSession(parent.id),
-  totalVoteCount: (parent) => VoteRepository.getVoteCountOfSession(parent.id)
+  postedBy: (parent, args, context) => {
+    return UserRepository.getUser(context.repo, parent.email)
+  },
+  questions: (parent, args, context) => {
+    return QuestionRepository.getQuestionsOfSession(context.repo, parent.id)
+  },
+  votesOfCurrentUser: (parent, args, context) => {
+    return VoteRepository.getSessionVotesOfCurrentUser(context.repo, parent.id, parent.email)
+  },
+  totalQuestionCount: (parent) => parent.totalQuestionCount,
+  totalVoteCount: (parent) => parent.totalVoteCount
 }

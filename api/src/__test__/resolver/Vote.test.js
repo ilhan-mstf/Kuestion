@@ -7,15 +7,15 @@ describe('Vote type resolver', () => {
     const question = { id: 'question-0' }
     QuestionRepository.getQuestion = jest.fn().mockImplementation(() => question)
 
-    const user = { id: 'user-0' }
+    const user = { email: 'user@google.com' }
     UserRepository.getUser = jest.fn().mockImplementation(() => user)
 
     const vote = {
       questionId: 'question-0',
-      userId: 'user-0'
+      email: 'user@google.com'
     }
 
-    expect(Vote.question(vote)).toEqual(question)
-    expect(Vote.user(vote)).toEqual(user)
+    expect(Vote.question(vote, {}, {repo:{}})).toEqual(question)
+    expect(Vote.user(vote, {}, {repo:{}})).toEqual(user)
   })
 })

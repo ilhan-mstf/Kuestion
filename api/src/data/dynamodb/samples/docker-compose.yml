@@ -1,0 +1,16 @@
+version: '2'
+services:
+    dynamodb:
+        container_name: dynamodb-kuestion
+        image: amazon/dynamodb-local
+        entrypoint: java
+        command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+        restart: always
+        volumes:
+          - dynamodb-kuestion:/home/dynamodblocal/data/
+        ports:
+          - "8000:8000"
+ 
+volumes:
+    dynamodb-kuestion:
+        external: true
