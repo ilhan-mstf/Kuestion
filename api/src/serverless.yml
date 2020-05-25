@@ -1,0 +1,28 @@
+service: kuestion-graphql-api
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+functions:
+  graphql:
+    handler: handler.server
+    events:
+    - http:
+        path: /api
+        method: post
+        cors: true
+  playground:
+    handler: handler.playground
+    events:
+    - http:
+        path: /playground
+        method: get
+        cors: true
+
+custom:
+  serverless-offline:
+    httpPort: 4000
