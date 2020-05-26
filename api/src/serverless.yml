@@ -27,8 +27,11 @@ provider:
       Resource:
         - Fn::GetAtt: [ UserTable, Arn ]
         - Fn::GetAtt: [ SessionTable, Arn ]
+        - Fn::Join: ["/", [{ Fn::GetAtt: [ SessionTable, Arn ] }, "index", "EmailIndex"]]
         - Fn::GetAtt: [ QuestionTable, Arn ]
+        - Fn::Join: ["/", [{ Fn::GetAtt: [ QuestionTable, Arn ] }, "index", "SessionIdIndex"]]
         - Fn::GetAtt: [ VoteTable, Arn ]
+        - Fn::Join: ["/", [{ Fn::GetAtt: [ VoteTable, Arn ] }, "index", "SessionIdEmailIndex"]]
     - Effect: "Allow"
       Action:
         - "logs:*"
@@ -99,7 +102,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
-        - IndexName: emailIndex
+        - IndexName: EmailIndex
           KeySchema:
           - AttributeName: email
             KeyType: HASH
