@@ -44,7 +44,7 @@ async function login (parent, { email, password }, context) {
   }
 
   const user = await UserRepository.getUser(context.repo, email)
-  if (!user.email) {
+  if (!user) {
     console.log(`No such user found for ${email}`)
     throw new Error('login - Invalid username or password')
   }
