@@ -10,6 +10,10 @@ provider:
   memorySize: 128
   timeout: 30
 
+  environment:
+    REGION: ${self:custom.dynamodb.region}
+    DYNAMODB_ENDPOINT: ${self:custom.dynamodb.url}
+
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -58,6 +62,9 @@ functions:
         cors: true
 
 custom:
+  dynamodb:
+    url: 'http://localhost:8000'
+    region: 'local'
   serverless-offline:
     httpPort: 4000
 
