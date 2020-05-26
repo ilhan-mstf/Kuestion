@@ -23,7 +23,7 @@ function createQuestion (parent, { text, sessionId }, context) {
 }
 
 async function signup (parent, { name, email, password }, context) {
-  const Authorization = context.request.get('Authorization')
+  const Authorization = Authentication.getAuthorization(context)
   if (Authorization) {
     throw new Error('signup - Already logged in!')
   }
@@ -38,7 +38,7 @@ async function signup (parent, { name, email, password }, context) {
 }
 
 async function login (parent, { email, password }, context) {
-  const Authorization = context.request.get('Authorization')
+  const Authorization = Authentication.getAuthorization(context)
   if (Authorization) {
     throw new Error('login - Already logged in!')
   }
