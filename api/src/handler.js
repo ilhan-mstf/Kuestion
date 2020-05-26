@@ -25,4 +25,3 @@ const lambda = new GraphQLServerLambda({
 })
 
 exports.server = lambda.graphqlHandler
-exports.playground = lambda.playgroundHandler

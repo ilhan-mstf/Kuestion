@@ -2,3 +2,5 @@
 node_modules
 **/dynamodb/instance
 **/build
+**/layer
+**/.serverless
