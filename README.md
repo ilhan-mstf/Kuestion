@@ -1,11 +1,13 @@
-# Kuestion
+# Kuestion -- WebApp
 Question collecting and voting app for live Q&A sessions.
 
-## Tech
+## Tech Stack
 - GraphQL
 - DynamoDb
 - Nodejs
 - React
+- Netlify
+- AWS Lambda
 
-## Css lib
+## CSS lib
 - http://tachyons.io/

@@ -1,6 +1,7 @@
-# Kuestion web app
+# Kuestion -- FrontEnd
 - React
 - Apollo GraphQL Client
 
-## To run
-`yarn start`
+## How to start?
+- `yarn install`
+- `yarn start`
