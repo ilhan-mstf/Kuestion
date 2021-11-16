@@ -10,7 +10,7 @@
     "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.678.0",
+    "aws-sdk": "^2.814.0",
     "jest": "^26.0.1",
     "serverless-offline": "^6.1.7"
   },
